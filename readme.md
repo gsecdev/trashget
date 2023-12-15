@@ -1,9 +1,10 @@
 ## trashget
 
-a tool which serves virtual big files on a http server for intrusion detection purposes.
+a simple tool which serves virtual big files on a http server for intrusion detection purposes.
 
-## Installation
-install go on your operating system. on debian `sudo apt install golang`
+### Installation
+install go on your operating system. eg. on debian `sudo apt install golang`.
+
 then just `go install github.com/gsecdev/trashget`
 
 ### Usage
