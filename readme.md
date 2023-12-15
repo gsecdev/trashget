@@ -23,7 +23,7 @@ Help Options:
 ```
 
 ### ToDo
-- [ ] throttling
+- [x] throttling
 - [ ] option to abort the download after a specified transmission length
-- [ ] serving of pseudo random data
+- [x] serving of pseudo random data
 - [ ] the simulation of valid file structures and headers, e.g. zip files

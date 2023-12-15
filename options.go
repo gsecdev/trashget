@@ -13,7 +13,7 @@ type Options struct {
 	Filename string `short:"f" long:"filename" default:"full_backup.zip" description:"filename to serve"`
 	Size     int64  `short:"s" long:"size" default:"1000" description:"virtual size to server (in MB)"`
 	Uri      string `short:"u" long:"uri" default:"/" description:"URI to serve at"`
-	// Throttle float32 `short:"t" long:"throttle" default:"-1" description:"throttle bandwith (in Mbit/s)"`
+	Throttle int    `short:"t" long:"throttle" default:"-1" description:"throttle bandwith (in Mbit/s)"`
 }
 
 // func (o Options) DoThrottle() bool {

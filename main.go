@@ -1,15 +1,16 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
 
+	"github.com/conduitio/bwlimit"
 	log "github.com/sirupsen/logrus"
-
-	"s.mcquay.me/sm/trash"
 )
 
 var InternalServerError = []byte("Internal Server Error")
@@ -35,27 +36,40 @@ func main() {
 		log.Errorf("port needs to be in rage 0-65535")
 	}
 
-	server := http.Server{
-		Handler: http.HandlerFunc(handle),
-		Addr:    fmt.Sprintf("%s:%d", cmdOpts.IP, cmdOpts.Port),
+	ln, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cmdOpts.IP, cmdOpts.Port))
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
+	if cmdOpts.Throttle > 0 {
+		ln = bwlimit.NewListener(ln, bwlimit.Byte(cmdOpts.Throttle)*1000*100, -1)
+		log.Infof("throtteling connection at %d Mbit/s", cmdOpts.Throttle)
+	}
+
+	http.Handle("/", http.HandlerFunc(handle))
+
+	srv := &http.Server{}
+	log.Printf("serving file '%s' with a virtual size of %d MB", cmdOpts.Filename, cmdOpts.Size)
 	log.Printf("server started at %s:%d\n", cmdOpts.IP, cmdOpts.Port)
-	log.Println(server.ListenAndServe())
+	log.Fatalf("Failed to serve: %v", srv.Serve(ln))
+
+	// log.Println(server.ListenAndServe())
 }
 
 type TrashReader struct {
-	data      []byte
+	size      int64
 	readIndex int64
 }
 
 func (r *TrashReader) Read(p []byte) (n int, err error) {
-	if r.readIndex >= int64(len(r.data)) {
+	if r.readIndex >= int64(r.size) {
 		err = io.EOF
 		return
 	}
 
-	n = copy(p, r.data[r.readIndex:])
+	// rand.Reader
+
+	// n = copy(p, r.data[r.readIndex:])
 	r.readIndex += int64(n)
 	return
 }
@@ -69,19 +83,15 @@ func setHeaders(w http.ResponseWriter, fileName string, fileSize int64) {
 	w.Header().Set("Content-Length", strconv.FormatInt(fileSize, 10))
 	//No cache headers.
 	w.Header().Set("Cache-Control", "private")
-	//No cache headers.
 	w.Header().Set("Pragma", "private")
-	//No cache headers.
 	w.Header().Set("Expires", "Mon, 26 Jul 1997 05:00:00 GMT")
 }
 
 func handleMegaFile(w http.ResponseWriter, r *http.Request, pseudoSize int64) {
-	//Set the headers
 	setHeaders(w, cmdOpts.Filename, pseudoSize)
 	w.WriteHeader(http.StatusOK)
 
-	//Copy without loading everything in memory
-	n, err := io.CopyN(w, trash.LoHi, pseudoSize)
+	n, err := io.CopyN(w, rand.Reader, pseudoSize)
 	if err != nil {
 		log.Errorf("error writing: %v", err)
 		return
