@@ -1,9 +1,13 @@
-# trashget
+## trashget
 
 a tool which serves virtual big files on a http server for intrusion detection purposes.
 
-'''
-Usage:
+## Installation
+install go on your operating system. on debian `sudo apt install golang`
+then just `go install github.com/gsecdev/trashget`
+
+### Usage
+```
   trashget [OPTIONS]
 
 Application Options:
@@ -15,9 +19,9 @@ Application Options:
 
 Help Options:
   -h, --help      Show this help message
-'''
+```
 
-## ToDo
+### ToDo
 - implement throttling
 - implement option to abort the download after a specified transmission length
 - implement serving of pseudo random data
