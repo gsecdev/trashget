@@ -19,10 +19,20 @@ var cmdOpts Options
 func main() {
 	var err error
 
-	_, err = cmdOpts.parseFlags()
+	writeHelp, err := cmdOpts.parseFlags()
 	if err != nil {
 		log.Errorf("%v", err)
 		os.Exit(1)
+	}
+
+	if cmdOpts.Filename == "" {
+		writeHelp()
+		log.Errorf("empty filename specified")
+	}
+
+	if cmdOpts.Port < 0 || cmdOpts.Port > 65535 {
+		writeHelp()
+		log.Errorf("port needs to be in rage 0-65535")
 	}
 
 	server := http.Server{

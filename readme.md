@@ -5,15 +5,15 @@ a simple tool which serves virtual big files on a http server for intrusion dete
 ### Installation
 install go on your operating system. eg. on debian `sudo apt install golang`.
 
-then just `go install github.com/gsecdev/trashget`
+then just run `go install github.com/gsecdev/trashget`
 
 ### Usage
 ```
-  trashget [OPTIONS]
+trashget [OPTIONS]
 
 Application Options:
   -p, --port=     port to listen at
-  -i, --ip=       IP to listen at
+  -i, --ip=       IP to listen at (defaults to all IPs)
   -f, --filename= filename to serve (default: full_backup.zip)
   -s, --size=     virtual size to server (in MB)
   -u, --uri=      URI to serve at (default: /)
@@ -23,7 +23,7 @@ Help Options:
 ```
 
 ### ToDo
-- implement throttling
-- implement option to abort the download after a specified transmission length
-- implement serving of pseudo random data
-- implement the simulation of valid file structures and headers, e.g. zip files
+- [ ] throttling
+- [ ] option to abort the download after a specified transmission length
+- [ ] serving of pseudo random data
+- [ ] the simulation of valid file structures and headers, e.g. zip files

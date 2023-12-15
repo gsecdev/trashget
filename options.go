@@ -9,7 +9,7 @@ import (
 
 type Options struct {
 	Port     int    `short:"p" long:"port" description:"port to listen at"`
-	IP       string `short:"i" long:"ip" description:"IP to listen at"`
+	IP       string `short:"i" long:"ip" description:"IP to listen at (defaults to all IPs)"`
 	Filename string `short:"f" long:"filename" default:"full_backup.zip" description:"filename to serve"`
 	Size     int64  `short:"s" long:"size" description:"virtual size to server (in MB)"`
 	Uri      string `short:"u" long:"uri" default:"/" description:"URI to serve at"`
