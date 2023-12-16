@@ -24,6 +24,6 @@ Help Options:
 
 ### ToDo
 - [x] throttling
-- [ ] option to abort the download after a specified transmission length
+- [x] option to abort the download after a specified transmission length
 - [x] serving of pseudo random data
 - [ ] the simulation of valid file structures and headers, e.g. zip files

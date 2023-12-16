@@ -4,44 +4,75 @@ import (
 	"fmt"
 	"os"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/jessevdk/go-flags"
 )
 
 type Options struct {
-	Port     int    `short:"p" long:"port" default:"8000" description:"port to listen at"`
-	IP       string `short:"i" long:"ip" description:"IP to listen at (defaults to all IPs)"`
-	Filename string `short:"f" long:"filename" default:"full_backup.zip" description:"filename to serve"`
-	Size     int64  `short:"s" long:"size" default:"1000" description:"virtual size to server (in MB)"`
-	Uri      string `short:"u" long:"uri" default:"/" description:"URI to serve at"`
-	Throttle int    `short:"t" long:"throttle" default:"-1" description:"throttle bandwith (in Mbit/s)"`
+	Port       int    `short:"p" long:"port" default:"8000" description:"port to listen at"`
+	IP         string `short:"i" long:"ip" description:"IP to listen at (defaults to all IPs)"`
+	Filename   string `short:"f" long:"filename" default:"full_backup.zip" description:"filename to serve"`
+	Size       int64  `short:"s" long:"size" default:"1000" description:"virtual size to server (in MB)"`
+	Uri        string `short:"u" long:"uri" default:"/" description:"URI to serve at"`
+	Throttle   int    `short:"t" long:"throttle" default:"-1" description:"throttle bandwith (in Mbit/s)"`
+	AbortAfter int    `short:"a" long:"abortAfter" default:"-1" description:"abort transmission after given %"`
 }
 
-// func (o Options) DoThrottle() bool {
-// 	return o.Throttle > 0
-// }
+func (o Options) DoesThrottle() bool {
+	return o.Throttle > 0
+}
 
-func (o *Options) parseFlags() (writeHelp func(), err error) {
+func (o Options) DoesAbort() bool {
+	return cmdOpts.AbortAfter != -1
+}
+
+func (o *Options) Validate(writeHelp func()) {
+	if cmdOpts.Filename == "" {
+		writeHelp()
+		log.Fatalf("empty filename specified")
+	}
+
+	if cmdOpts.Port < 0 || cmdOpts.Port > 65535 {
+		writeHelp()
+		log.Fatalf("port needs to be in rage 0-65535")
+	}
+
+	if cmdOpts.Size < 0 {
+		writeHelp()
+		log.Fatalf("illegal file size: %d", cmdOpts.Size)
+	}
+
+	if (cmdOpts.AbortAfter < 0 || cmdOpts.AbortAfter > 100) && cmdOpts.AbortAfter != -1 {
+		writeHelp()
+		log.Fatalf("illegal abort percentage: %d. needs to be -1 (deactivated) or between 0-100", cmdOpts.AbortAfter)
+	}
+}
+
+func (o *Options) parseFlags() (err error) {
 	parser := flags.NewParser(o, flags.HelpFlag|flags.PassDoubleDash)
 
-	writeHelp = func() {
+	writeHelp := func() {
 		parser.WriteHelp(os.Stdout)
 	}
 
 	if _, err = parser.Parse(); err != nil {
 		if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
-			parser.WriteHelp(os.Stdout)
+			writeHelp()
 			os.Exit(0)
 		} else {
-			parser.WriteHelp(os.Stdout)
-			return writeHelp, fmt.Errorf("error parsing flags: %v", err)
+			writeHelp()
+			return fmt.Errorf("error parsing flags: %v", err)
 		}
 	}
 
-	// log.SetFormatter(&log.TextFormatter{
-	// 	ForceColors:     false,
-	// 	FullTimestamp:   true,
-	// 	TimestampFormat: "060102 150405.00",
-	// })
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:     false,
+		FullTimestamp:   true,
+		TimestampFormat: "060102 150405.00",
+	})
+
+	o.Validate(writeHelp)
 
 	// log.SetOutput(os.Stdout)
 
@@ -54,5 +85,5 @@ func (o *Options) parseFlags() (writeHelp func(), err error) {
 	// } else {
 	// 	log.SetLevel(log.InfoLevel)
 	// }
-	return writeHelp, nil
+	return nil
 }
