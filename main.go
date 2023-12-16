@@ -75,9 +75,7 @@ func (r *TrashReader) Read(p []byte) (n int, err error) {
 
 	r.readIndex += int64(n)
 	if int64(n)+r.readIndex > int64(r.size*int64(r.abortAfter)/100.0) {
-		log.Printf("%d + %d > %d / 100 * %d", n, r.readIndex, r.abortAfter, r.size)
 		err = fmt.Errorf("forcefully aborted download after %d %%", r.abortAfter)
-
 	}
 	return
 }
@@ -111,7 +109,7 @@ func handleMegaFile(w http.ResponseWriter, r *http.Request, pseudoSize int64) {
 
 func handle(w http.ResponseWriter, r *http.Request) {
 
-	log.Infof("requested path: %s", r.URL.Path)
+	log.Infof("%v requested path: %s", r.RemoteAddr, r.URL.Path)
 
 	if cmdOpts.Uri == "/" || r.URL.Path == cmdOpts.Uri {
 		handleMegaFile(w, r, 1024*1024*cmdOpts.Size)
