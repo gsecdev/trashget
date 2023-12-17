@@ -1,6 +1,6 @@
 module github.com/gsecdev/trashget
 
-go 1.16
+go 1.20
 
 require (
 	github.com/conduitio/bwlimit v0.1.0
