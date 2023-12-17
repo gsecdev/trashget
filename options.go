@@ -15,7 +15,7 @@ type Options struct {
 	Size       int64  `short:"s" long:"size" default:"1000" description:"virtual size of file (in MB)"`
 	Uri        string `short:"u" long:"uri" default:"/" description:"URI to serve at"`
 	Throttle   int    `short:"t" long:"throttle" default:"-1" description:"throttle bandwith (in Mbit/s)"`
-	AbortAfter int    `short:"a" long:"abortAfter" default:"-1" description:"abort transmission after given %"`
+	AbortAfter int    `short:"a" long:"abortAfter" default:"100" description:"abort transmission after given %"`
 }
 
 func (o Options) DoesThrottle() bool {
@@ -23,7 +23,7 @@ func (o Options) DoesThrottle() bool {
 }
 
 func (o Options) DoesAbort() bool {
-	return cmdOpts.AbortAfter != -1
+	return cmdOpts.AbortAfter != 100
 }
 
 func (o *Options) Validate(writeHelp func()) {
@@ -42,9 +42,9 @@ func (o *Options) Validate(writeHelp func()) {
 		log.Fatalf("illegal file size: %d", cmdOpts.Size)
 	}
 
-	if (cmdOpts.AbortAfter < 0 || cmdOpts.AbortAfter > 100) && cmdOpts.AbortAfter != -1 {
+	if cmdOpts.AbortAfter < 0 || cmdOpts.AbortAfter > 100 {
 		writeHelp()
-		log.Fatalf("illegal abort percentage: %d. needs to be -1 (deactivated) or between 0-100", cmdOpts.AbortAfter)
+		log.Fatalf("illegal abort percentage: %d. needs to be in range 0-100", cmdOpts.AbortAfter)
 	}
 }
 

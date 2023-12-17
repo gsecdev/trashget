@@ -18,7 +18,7 @@ Application Options:
   -s, --size=       virtual size of file (in MB) (default: 1000)
   -u, --uri=        URI to serve at (default: /)
   -t, --throttle=   throttle bandwith (in Mbit/s) (default: -1)
-  -a, --abortAfter= abort transmission after given % (default: -1)
+  -a, --abortAfter= abort transmission after given % (default: 100)
 
 Help Options:
   -h, --help        Show this help message

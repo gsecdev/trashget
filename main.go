@@ -54,11 +54,7 @@ type TrashReader struct {
 }
 
 func NewTrashReader(size int64, abortAfterPercent int) TrashReader {
-	if abortAfterPercent == -1 {
-		abortAfterPercent = 101
-	}
-
-	abortAfter := int64(size * int64(abortAfterPercent) / 100.0)
+	abortAfter := int64(size * int64(abortAfterPercent) / 100)
 	return TrashReader{size: size, abortAfter: abortAfter, readIndex: 0}
 }
 
@@ -75,9 +71,16 @@ func (r *TrashReader) Read(p []byte) (n int, err error) {
 	}
 
 	r.readIndex += int64(n)
-	if int64(n)+r.readIndex > r.abortAfter {
-		err = fmt.Errorf("forcefully aborted after meeting threshold")
+	if r.readIndex > r.size {
+		//remove overshot of n and readIndex
+		n -= int(int64(r.readIndex) - (r.size))
+		r.readIndex = r.size
 	}
+
+	if r.readIndex > r.abortAfter {
+		err = fmt.Errorf("forcefully aborting after meeting threshold")
+	}
+
 	return
 }
 
