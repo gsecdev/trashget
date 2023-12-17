@@ -3,7 +3,7 @@
 a simple tool which serves virtual big files on a http server for intrusion detection purposes.
 
 ### Installation
-install go on your operating system. eg. on debian `sudo apt install golang`.
+install go on your operating system. eg. on debian `sudo apt install golang` or follow instructions on `https://go.dev/doc/install`.
 
 then just run `go install github.com/gsecdev/trashget@latest`
 
