@@ -13,7 +13,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var InternalServerError = []byte("Internal Server Error")
 var NotFound = []byte("Page Not Found")
 var cmdOpts Options
 
@@ -37,7 +36,7 @@ func main() {
 	}
 
 	if cmdOpts.DoesAbort() {
-		log.Infof("will abort all downloads after %d %%", cmdOpts.AbortAfter)
+		log.Infof("will abort downloads after %d%%", cmdOpts.AbortAfter)
 	}
 
 	http.Handle("/", http.HandlerFunc(handle))
@@ -51,13 +50,15 @@ func main() {
 type TrashReader struct {
 	size       int64
 	readIndex  int64
-	abortAfter int
+	abortAfter int64
 }
 
-func NewTrashReader(size int64, abortAfter int) TrashReader {
-	if abortAfter == -1 {
-		abortAfter = 101
+func NewTrashReader(size int64, abortAfterPercent int) TrashReader {
+	if abortAfterPercent == -1 {
+		abortAfterPercent = 101
 	}
+
+	abortAfter := int64(size * int64(abortAfterPercent) / 100.0)
 	return TrashReader{size: size, abortAfter: abortAfter, readIndex: 0}
 }
 
@@ -74,20 +75,20 @@ func (r *TrashReader) Read(p []byte) (n int, err error) {
 	}
 
 	r.readIndex += int64(n)
-	if int64(n)+r.readIndex > int64(r.size*int64(r.abortAfter)/100.0) {
-		err = fmt.Errorf("forcefully aborted download after %d %%", r.abortAfter)
+	if int64(n)+r.readIndex > r.abortAfter {
+		err = fmt.Errorf("forcefully aborted after meeting threshold")
 	}
 	return
 }
 
 func setHeaders(w http.ResponseWriter, fileName string, fileSize int64) {
-	//Represents binary file
+	//binary file
 	w.Header().Set("Content-Type", "application/octet-stream")
-	//Tells client what filename should be used.
+	//filename
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, fileName))
-	//The length of the data.
+	//length of the data
 	w.Header().Set("Content-Length", strconv.FormatInt(fileSize, 10))
-	//No cache headers.
+	//disable caches
 	w.Header().Set("Cache-Control", "private")
 	w.Header().Set("Pragma", "private")
 	w.Header().Set("Expires", "Mon, 26 Jul 1997 05:00:00 GMT")
@@ -123,8 +124,3 @@ func notFound(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write(NotFound)
 }
-
-// func handleError(err error, w http.ResponseWriter) {
-// 	w.WriteHeader(http.StatusInternalServerError)
-// 	w.Write(InternalServerError)
-// }

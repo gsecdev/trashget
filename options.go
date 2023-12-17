@@ -4,16 +4,15 @@ import (
 	"fmt"
 	"os"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/jessevdk/go-flags"
+	log "github.com/sirupsen/logrus"
 )
 
 type Options struct {
 	Port       int    `short:"p" long:"port" default:"8000" description:"port to listen at"`
 	IP         string `short:"i" long:"ip" description:"IP to listen at (defaults to all IPs)"`
 	Filename   string `short:"f" long:"filename" default:"full_backup.zip" description:"filename to serve"`
-	Size       int64  `short:"s" long:"size" default:"1000" description:"virtual size to server (in MB)"`
+	Size       int64  `short:"s" long:"size" default:"1000" description:"virtual size of file (in MB)"`
 	Uri        string `short:"u" long:"uri" default:"/" description:"URI to serve at"`
 	Throttle   int    `short:"t" long:"throttle" default:"-1" description:"throttle bandwith (in Mbit/s)"`
 	AbortAfter int    `short:"a" long:"abortAfter" default:"-1" description:"abort transmission after given %"`
@@ -69,7 +68,7 @@ func (o *Options) parseFlags() (err error) {
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors:     false,
 		FullTimestamp:   true,
-		TimestampFormat: "060102 150405.00",
+		TimestampFormat: "2006-01-02 15:04:05.00",
 	})
 
 	o.Validate(writeHelp)

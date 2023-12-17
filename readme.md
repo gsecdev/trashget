@@ -15,13 +15,13 @@ Application Options:
   -p, --port=       port to listen at (default: 8000)
   -i, --ip=         IP to listen at (defaults to all IPs)
   -f, --filename=   filename to serve (default: full_backup.zip)
-  -s, --size=       virtual size to server (in MB) (default: 1000)
+  -s, --size=       virtual size of file (in MB) (default: 1000)
   -u, --uri=        URI to serve at (default: /)
   -t, --throttle=   throttle bandwith (in Mbit/s) (default: -1)
   -a, --abortAfter= abort transmission after given % (default: -1)
 
 Help Options:
-  -h, --help      Show this help message
+  -h, --help        Show this help message
 ```
 
 ### ToDo
