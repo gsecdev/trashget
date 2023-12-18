@@ -7,10 +7,10 @@ install go on your operating system. eg. on debian `sudo apt install golang` or 
 
 then just run `go install github.com/gsecdev/trashget@latest`
 
-you may proxy the server behind you webserver. eg proxying behind an nginx server by using a similar configuration:
+you may proxy the server behind a webserver. eg proxying behind an nginx server by using a similar configuration:
 
 ```
-       location /trash/ful_backup.zip {
+       location /trash/full_backup.zip {
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_buffering off;
                 proxy_cache off;
