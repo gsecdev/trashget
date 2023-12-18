@@ -113,7 +113,11 @@ func handleMegaFile(w http.ResponseWriter, r *http.Request, pseudoSize int64) {
 
 func handle(w http.ResponseWriter, r *http.Request) {
 
-	log.Infof("%v requested path: %s", r.RemoteAddr, r.URL.Path)
+	if xforward := r.Header.Get("X-Forwarded-For"); xforward != "" {
+		log.Infof("%v (forwarding %s) requested path: %s", r.RemoteAddr, xforward, r.URL.Path)
+	} else {
+		log.Infof("%v requested path: %s", r.RemoteAddr, r.URL.Path)
+	}
 
 	if cmdOpts.Uri == "/" || r.URL.Path == cmdOpts.Uri {
 		handleMegaFile(w, r, 1024*1024*cmdOpts.Size)
